@@ -1,0 +1,4 @@
+
+CRON from controller command
+
+php index.php api userController cron
