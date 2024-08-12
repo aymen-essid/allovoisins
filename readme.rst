@@ -1,22 +1,46 @@
-Authentication
-==============
+Install Project
+===============
 
-All endpoints require authentication via an API key. Include the API key in the request headers::
+1. Use the file user_table.sql
+---------------------------------
+2. use the file MOCK_DATA_USERS.sql ti insert dummy data.
+---------------------------------
+3. check apache rewrite_mod is enabled
+---------------------------------
 
-    Authorization: Bearer <API_KEY>
+
+
+
 
 Endpoints
 =========
 
-1. Get All Users
-----------------
 
-- **Endpoint**: `/users`
+1. Front routes
+---------------------
+$route['api/user/register']        
+$route['api/user/profile/$id_user']
+
+
+2. Private API routes
+---------------------
+$route['api/users/page/$id_page']['get']      
+$route['api/user/detail/$id_user']['get']
+$route['api/user/create']['post'] 
+$route['api/user/update/$id_user']['put']
+$route['api/user/delete/$id_user']['delete']
+
+3. Cron Routes
+---------------------
+$route['cron/users/delete-inactive']    = 'cron/CronController/deleteInactiveUsers';
+
+
+
+- **Endpoint**: `/api/users/page/($id_page)`
 - **Method**: `GET`
 - **Description**: Retrieve a list of all users.
 - **Query Parameters**:
-  - `limit` (optional, integer): Number of users to return. Defaults to 10.
-  - `offset` (optional, integer): Number of users to skip. Defaults to 0.
+  - `id_page` (required, integer): Number of the page, and each page returns 10 results by default.
 
 - **Response**:
   - **Status**: `200 OK`
@@ -28,7 +52,7 @@ Endpoints
         "firstName": "John",
         "lastName": "Doe",
         "email": "john.doe@example.com",
-        "phone": "+1234567890",
+        "phone": "01234567890",
         "postalAddress": "123 Main St, Anytown, USA",
         "professionalStatus": "Engineer",
         "lastLogin": "2024-08-10T14:48:00Z"
@@ -36,117 +60,3 @@ Endpoints
       ...
     ]
 
-2. Get a User by id
--------------------
-
-- **Endpoint**: `/users/{id}`
-- **Method**: `GET`
-- **Description**: Retrieve information for a specific user by id.
-- **Path Parameters**:
-  - `id` (required, integer): The unique id of the user.
-
-- **Response**:
-  - **Status**: `200 OK`
-  - **Body**::
-
-    {
-      "id": 1,
-      "firstName": "John",
-      "lastName": "Doe",
-      "email": "john.doe@example.com",
-      "phone": "+1234567890",
-      "postalAddress": "123 Main St, Anytown, USA",
-      "professionalStatus": "Engineer",
-      "lastLogin": "2024-08-10T14:48:00Z"
-    }
-
-3. Create a New User
---------------------
-
-- **Endpoint**: `/users`
-- **Method**: `POST`
-- **Description**: Create a new user.
-- **Request Body**:
-  - **Content-Type**: `application/json`
-  - **Body**::
-
-    {
-      "firstName": "Jane",
-      "lastName": "Doe",
-      "email": "jane.doe@example.com",
-      "phone": "+0987654321",
-      "postalAddress": "456 Elm St, Anytown, USA",
-      "professionalStatus": "Designer"
-    }
-
-- **Response**:
-  - **Status**: `201 Created`
-  - **Body**::
-
-    {
-      "id": 2,
-      "firstName": "Jane",
-      "lastName": "Doe",
-      "email": "jane.doe@example.com",
-      "phone": "+0987654321",
-      "postalAddress": "456 Elm St, Anytown, USA",
-      "professionalStatus": "Designer",
-      "lastLogin": null
-    }
-
-4. Update a User
-----------------
-
-- **Endpoint**: `/users/{id}`
-- **Method**: `PUT`
-- **Description**: Update the information of an existing user.
-- **Path Parameters**:
-  - `id` (required, integer): The unique id of the user.
-
-- **Request Body**:
-  - **Content-Type**: `application/json`
-  - **Body**::
-
-    {
-      "firstName": "Jane",
-      "lastName": "Smith",
-      "email": "jane.smith@example.com",
-      "phone": "+0987654321",
-      "postalAddress": "456 Elm St, Anytown, USA",
-      "professionalStatus": "Senior Designer"
-    }
-
-- **Response**:
-  - **Status**: `200 OK`
-  - **Body**::
-
-    {
-      "id": 2,
-      "firstName": "Jane",
-      "lastName": "Smith",
-      "email": "jane.smith@example.com",
-      "phone": "+0987654321",
-      "postalAddress": "456 Elm St, Anytown, USA",
-      "professionalStatus": "Senior Designer",
-      "lastLogin": "2024-08-11T09:00:00Z"
-    }
-
-5. Delete a User
-----------------
-
-- **Endpoint**: `/users/{id}`
-- **Method**: `DELETE`
-- **Description**: Delete a user by id.
-- **Path Parameters**:
-  - `id` (required, integer): The unique id of the user.
-
-- **Response**:
-  - **Status**: `204 No Content`
-
-Error Handling
-==============
-
-- **400 Bad Request**: The request was invalid or cannot be otherwise served.
-- **401 Unauthorized**: Authentication is required and has failed or has not been provided.
-- **404 Not Found**: The requested resource could not be found.
-- **500 Internal Server Error**: An unexpected error occurred on the server side.
