@@ -19,20 +19,25 @@ Endpoints
 1. Front routes
 ---------------------
 $route['api/user/register']        
+
 $route['api/user/profile/$id_user']
 
 
 2. Private API routes
 ---------------------
-$route['api/users/page/$id_page']['get']      
+$route['api/users/page/$id_page']['get']   
+
 $route['api/user/detail/$id_user']['get']
+
 $route['api/user/create']['post'] 
+
 $route['api/user/update/$id_user']['put']
+
 $route['api/user/delete/$id_user']['delete']
 
 3. Cron Routes
 ---------------------
-$route['cron/users/delete-inactive']    = 'cron/CronController/deleteInactiveUsers';
+$route['cron/users/delete-inactive']
 
 
 
