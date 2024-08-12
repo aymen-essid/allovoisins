@@ -1,71 +1,152 @@
-###################
-What is CodeIgniter
-###################
+Authentication
+==============
 
-CodeIgniter is an Application Development Framework - a toolkit - for people
-who build web sites using PHP. Its goal is to enable you to develop projects
-much faster than you could if you were writing code from scratch, by providing
-a rich set of libraries for commonly needed tasks, as well as a simple
-interface and logical structure to access these libraries. CodeIgniter lets
-you creatively focus on your project by minimizing the amount of code needed
-for a given task.
+All endpoints require authentication via an API key. Include the API key in the request headers::
 
-*******************
-Release Information
-*******************
+    Authorization: Bearer <API_KEY>
 
-This repo contains in-development code for future releases. To download the
-latest stable release please visit the `CodeIgniter Downloads
-<https://codeigniter.com/download>`_ page.
+Endpoints
+=========
 
-**************************
-Changelog and New Features
-**************************
+1. Get All Users
+----------------
 
-You can find a list of all changes for each release in the `user
-guide change log <https://github.com/bcit-ci/CodeIgniter/blob/develop/user_guide_src/source/changelog.rst>`_.
+- **Endpoint**: `/users`
+- **Method**: `GET`
+- **Description**: Retrieve a list of all users.
+- **Query Parameters**:
+  - `limit` (optional, integer): Number of users to return. Defaults to 10.
+  - `offset` (optional, integer): Number of users to skip. Defaults to 0.
 
-*******************
-Server Requirements
-*******************
+- **Response**:
+  - **Status**: `200 OK`
+  - **Body**::
 
-PHP version 5.6 or newer is recommended.
+    [
+      {
+        "id": 1,
+        "firstName": "John",
+        "lastName": "Doe",
+        "email": "john.doe@example.com",
+        "phone": "+1234567890",
+        "postalAddress": "123 Main St, Anytown, USA",
+        "professionalStatus": "Engineer",
+        "lastLogin": "2024-08-10T14:48:00Z"
+      },
+      ...
+    ]
 
-It should work on 5.3.7 as well, but we strongly advise you NOT to run
-such old versions of PHP, because of potential security and performance
-issues, as well as missing features.
+2. Get a User by id
+-------------------
 
-************
-Installation
-************
+- **Endpoint**: `/users/{id}`
+- **Method**: `GET`
+- **Description**: Retrieve information for a specific user by id.
+- **Path Parameters**:
+  - `id` (required, integer): The unique id of the user.
 
-Please see the `installation section <https://codeigniter.com/userguide3/installation/index.html>`_
-of the CodeIgniter User Guide.
+- **Response**:
+  - **Status**: `200 OK`
+  - **Body**::
 
-*******
-License
-*******
+    {
+      "id": 1,
+      "firstName": "John",
+      "lastName": "Doe",
+      "email": "john.doe@example.com",
+      "phone": "+1234567890",
+      "postalAddress": "123 Main St, Anytown, USA",
+      "professionalStatus": "Engineer",
+      "lastLogin": "2024-08-10T14:48:00Z"
+    }
 
-Please see the `license
-agreement <https://github.com/bcit-ci/CodeIgniter/blob/develop/user_guide_src/source/license.rst>`_.
+3. Create a New User
+--------------------
 
-*********
-Resources
-*********
+- **Endpoint**: `/users`
+- **Method**: `POST`
+- **Description**: Create a new user.
+- **Request Body**:
+  - **Content-Type**: `application/json`
+  - **Body**::
 
--  `User Guide <https://codeigniter.com/docs>`_
--  `Contributing Guide <https://github.com/bcit-ci/CodeIgniter/blob/develop/contributing.md>`_
--  `Language File Translations <https://github.com/bcit-ci/codeigniter3-translations>`_
--  `Community Forums <http://forum.codeigniter.com/>`_
--  `Community Wiki <https://github.com/bcit-ci/CodeIgniter/wiki>`_
--  `Community Slack Channel <https://codeigniterchat.slack.com>`_
+    {
+      "firstName": "Jane",
+      "lastName": "Doe",
+      "email": "jane.doe@example.com",
+      "phone": "+0987654321",
+      "postalAddress": "456 Elm St, Anytown, USA",
+      "professionalStatus": "Designer"
+    }
 
-Report security issues to our `Security Panel <mailto:security@codeigniter.com>`_
-or via our `page on HackerOne <https://hackerone.com/codeigniter>`_, thank you.
+- **Response**:
+  - **Status**: `201 Created`
+  - **Body**::
 
-***************
-Acknowledgement
-***************
+    {
+      "id": 2,
+      "firstName": "Jane",
+      "lastName": "Doe",
+      "email": "jane.doe@example.com",
+      "phone": "+0987654321",
+      "postalAddress": "456 Elm St, Anytown, USA",
+      "professionalStatus": "Designer",
+      "lastLogin": null
+    }
 
-The CodeIgniter team would like to thank EllisLab, all the
-contributors to the CodeIgniter project and you, the CodeIgniter user.
+4. Update a User
+----------------
+
+- **Endpoint**: `/users/{id}`
+- **Method**: `PUT`
+- **Description**: Update the information of an existing user.
+- **Path Parameters**:
+  - `id` (required, integer): The unique id of the user.
+
+- **Request Body**:
+  - **Content-Type**: `application/json`
+  - **Body**::
+
+    {
+      "firstName": "Jane",
+      "lastName": "Smith",
+      "email": "jane.smith@example.com",
+      "phone": "+0987654321",
+      "postalAddress": "456 Elm St, Anytown, USA",
+      "professionalStatus": "Senior Designer"
+    }
+
+- **Response**:
+  - **Status**: `200 OK`
+  - **Body**::
+
+    {
+      "id": 2,
+      "firstName": "Jane",
+      "lastName": "Smith",
+      "email": "jane.smith@example.com",
+      "phone": "+0987654321",
+      "postalAddress": "456 Elm St, Anytown, USA",
+      "professionalStatus": "Senior Designer",
+      "lastLogin": "2024-08-11T09:00:00Z"
+    }
+
+5. Delete a User
+----------------
+
+- **Endpoint**: `/users/{id}`
+- **Method**: `DELETE`
+- **Description**: Delete a user by id.
+- **Path Parameters**:
+  - `id` (required, integer): The unique id of the user.
+
+- **Response**:
+  - **Status**: `204 No Content`
+
+Error Handling
+==============
+
+- **400 Bad Request**: The request was invalid or cannot be otherwise served.
+- **401 Unauthorized**: Authentication is required and has failed or has not been provided.
+- **404 Not Found**: The requested resource could not be found.
+- **500 Internal Server Error**: An unexpected error occurred on the server side.

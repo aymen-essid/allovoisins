@@ -54,15 +54,15 @@ $route['404_override'] = '';
 $route['translate_uri_dashes'] = FALSE;
 
 // Public API routes
-$route['admin/register']        = 'api/AdminController/registerPost';
-$route['admin/profile/(:num)']  = 'api/AdminController/profilePut/$1';
+$route['api/user/register']        = 'api/FrontController/registerUser';
+$route['api/user/profile/(:num)']  = 'api/FrontController/updateProfile/$1';
 
 // Private API routes
-$route['users/page/(:num)']['get']      = 'api/UserController/getUsers/$1';
-$route['user/detail/(:num)']['get']     = 'api/UserController/getUser/$1';
-$route['user/create']['post']           = 'api/UserController/createUser';
-$route['user/update/(:num)']['put']     = 'api/UserController/updateUser/$1';
-$route['user/delete/(:num)']['delete']  = 'api/UserController/deleteUser/$1';
+$route['api/users/page/(:num)']['get']      = 'api/BackController/getUsers/$1';
+$route['api/user/detail/(:num)']['get']     = 'api/BackController/getUser/$1';
+$route['api/user/create']['post']           = 'api/BackController/createUser';
+$route['api/user/update/(:num)']['put']     = 'api/BackController/updateUser/$1';
+$route['api/user/delete/(:num)']['delete']  = 'api/BackController/deleteUser/$1';
 
 // Cron Routes
-$route['user/cron']    = 'api/UserController/cron';
+$route['cron/users/delete-inactive']    = 'cron/CronController/deleteInactiveUsers';

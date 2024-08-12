@@ -2,24 +2,20 @@
 
 defined('BASEPATH') OR exit('No direct script access allowed');
 
-class UserController extends CI_Controller {
+class BackController extends CI_Controller {
 
     public function __construct() {
         parent::__construct();
-        $this->load->model('User_model', 'UserModel');
+        $this->load->model('User_model');
         $this->load->helper('url');
         $this->load->library('form_validation');
         $this->load->library('pagination');
     }
 
-    public function cron(){
-        echo "cron from controller"; //ToDo
-    }
-
     // Get single user
     public function getUser($id = null) {
 
-        $users = $this->UserModel->getUser($id);
+        $users = $this->User_model->getUser($id);
 
         $this->output
              ->set_content_type('application/json')
@@ -31,19 +27,19 @@ class UserController extends CI_Controller {
 
         // Pagination configuration
         $config['base_url'] = base_url('users/page'); // URL for pagination links
-        $config['total_rows'] = $this->UserModel->countAllUsers(); // Total number of users
+        $config['total_rows'] = $this->User_model->countAllUsers(); // Total number of users
         $config['per_page'] = 10; // Number of users per page
-        $config['uri_segment'] = 3; // Segment in the URL to get the page number
+        $config['uri_segment'] = 4; // Segment in the URL to get the page number
         $config['use_page_numbers'] = TRUE;
 
         // Initialize pagination
         $this->pagination->initialize($config);
 
         // Get current page number
-        $page = ($this->uri->segment(3)) ? $this->uri->segment(3) : 0;
+        $page = ($this->uri->segment($config['uri_segment'])) ? $this->uri->segment($config['uri_segment']) : 0;
 
         // Fetch users with limit
-        $data['users'] = $this->UserModel->getUsers($config['per_page'], $page);
+        $data['users'] = $this->User_model->getUsers($config['per_page'], $page);
 
 
         $this->output
@@ -72,16 +68,16 @@ class UserController extends CI_Controller {
         }
 
         // Set User Data
-        $this->UserModel->setFirstName($data['firstName']);
-        $this->UserModel->setLastName($data['lastName']);
-        $this->UserModel->setEmail($data['email']);
-        $this->UserModel->setPhone($data['phone']);
-        $this->UserModel->setPostalAddress($data['postalAddress']);
-        $this->UserModel->setProfessionalStatus($data['professionalStatus']);
-        $this->UserModel->setCreatedAt(date('Y-m-d H:i:s'));
+        $this->User_model->setFirstName($data['firstName']);
+        $this->User_model->setLastName($data['lastName']);
+        $this->User_model->setEmail($data['email']);
+        $this->User_model->setPhone($data['phone']);
+        $this->User_model->setPostalAddress($data['postalAddress']);
+        $this->User_model->setProfessionalStatus($data['professionalStatus']);
+        $this->User_model->setCreatedAt(date('Y-m-d H:i:s'));
 
         // Save User
-        $this->UserModel->registerUser();
+        $this->User_model->registerUser();
 
         $this->output
              ->set_content_type('application/json')
@@ -92,52 +88,28 @@ class UserController extends CI_Controller {
     public function updateUser($id) {
         $data = json_decode($this->input->raw_input_stream, true);
 
-        // Validation
-        $this->form_validation->set_data($data);
-        $this->form_validation->set_rules('firstName', 'First Name', 'required');
-        $this->form_validation->set_rules('lastName', 'Last Name', 'required');
-        if (isset($data['email'])) {
-            $this->form_validation->set_rules('email', 'Email', 'required|valid_email|callback_emailCheck['.$id.']');
-        }
-        if (isset($data['phone'])) {
-            $this->form_validation->set_rules('phone', 'Phone', 'required');
-        }
-        if (isset($data['postalAddress'])) {
-            $this->form_validation->set_rules('postalAddress', 'Postal Address', 'required');
-        }
-        if (isset($data['professionalStatus'])) {
-            $this->form_validation->set_rules('professionalStatus', 'Professional Status', 'required');
-        }
-
-        if ($this->form_validation->run() == FALSE) {
-            $this->output
-                 ->set_content_type('application/json')
-                 ->set_output(json_encode(['status' => false, 'message' => $this->form_validation->error_array()]));
-            return;
-        }
-
         // Load User
-        $this->UserModel->loadUserById($id);
+        $this->User_model->loadUserById($id);
 
         // Set New Data
-        $this->UserModel->setFirstName($data['firstName']);
-        $this->UserModel->setLastName($data['lastName']);
+        $this->User_model->setFirstName($data['firstName']);
+        $this->User_model->setLastName($data['lastName']);
         if (isset($data['email'])) {
-            $this->UserModel->setEmail($data['email']);
+            $this->User_model->setEmail($data['email']);
         }
         if (isset($data['phone'])) {
-            $this->UserModel->setPhone($data['phone']);
+            $this->User_model->setPhone($data['phone']);
         }
         if (isset($data['postalAddress'])) {
-            $this->UserModel->setPostalAddress($data['postalAddress']);
+            $this->User_model->setPostalAddress($data['postalAddress']);
         }
         if (isset($data['professionalStatus'])) {
-            $this->UserModel->setProfessionalStatus($data['professionalStatus']);
+            $this->User_model->setProfessionalStatus($data['professionalStatus']);
         }
-        $this->UserModel->setUpdatedAt(date('Y-m-d H:i:s'));
+        $this->User_model->setUpdatedAt(date('Y-m-d H:i:s'));
 
         // Update User
-        $this->UserModel->updateProfile();
+        $this->User_model->updateProfile();
 
         $this->output
              ->set_content_type('application/json')
@@ -146,7 +118,7 @@ class UserController extends CI_Controller {
 
     // Delete a user
     public function deleteUser($id) {
-        $this->UserModel->deleteUser($id);
+        $this->User_model->deleteUser($id);
 
         $this->output
              ->set_content_type('application/json')
@@ -155,7 +127,7 @@ class UserController extends CI_Controller {
 
     // Custom validation callback to check email uniqueness excluding the current user
     public function emailCheck($email, $id) {
-        $user = $this->UserModel->getUserByEmail($email);
+        $user = $this->User_model->getUserByEmail($email);
         if ($user && $user['id'] != $id) {
             $this->form_validation->set_message('emailCheck', 'The {field} field must contain a unique value.');
             return FALSE;
